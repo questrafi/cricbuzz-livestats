@@ -2,6 +2,20 @@ import streamlit as st
 import pandas as pd
 import requests
 from db_connection import mydb,mycursor
+
+# Sidebar information box
+st.sidebar.markdown("""
+<div style="background-color: #294C6F; padding: 15px; border-radius: 8px; color: white;">
+<b>Player Stats Page:</b>
+<ul>
+<li>Search any cricket player</li>
+<li>Career statistics across formats</li>
+<li>Comprehensive player profiles</li>
+</ul>
+</div>
+""", unsafe_allow_html=True)
+
+
 #st.write("HELLO FROM PLAYER STATS PAGE")
 st.title("👤Cricket Player Statistics")
 st.header("🔍 Search a player")
@@ -22,7 +36,7 @@ if st.session_state.get("search_clicked",False):
     querystring = {"plrN":player_name}
 
     headers = {
-	"x-rapidapi-key": "a14617a5fdmsh78a4372d53e9856p147d97jsn9e967e13adb5",
+	"x-rapidapi-key": "b0102cb292msh23226301ff12009p19a043jsn677d85b2be33",
 	"x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
 	"Content-Type": "application/json"
     }
@@ -70,7 +84,7 @@ if st.session_state.get("search_clicked",False):
     url = f"https://cricbuzz-cricket.p.rapidapi.com/stats/v1/player/{selected_player_id}"
 
     headers = {
-	"x-rapidapi-key": "a14617a5fdmsh78a4372d53e9856p147d97jsn9e967e13adb5",
+	"x-rapidapi-key": "b0102cb292msh23226301ff12009p19a043jsn677d85b2be33",
 	"x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
 	"Content-Type": "application/json"
     }
@@ -104,6 +118,9 @@ if st.session_state.get("search_clicked",False):
             dob = player_info_data.get("dob","Not Available")
             birth_place = player_info_data.get("birth_place","Not Available")
 
+             # =======================================
+             # INSERTING VALUES IN THE PLAYERS4 TABLE:
+             # =======================================
             mycursor.execute(
                 "SELECT * FROM PLAYERS4 WHERE player_id = %s",
                 (player_id,)
@@ -133,8 +150,9 @@ if st.session_state.get("search_clicked",False):
                              
                              )
                 mydb.commit()
-            else:
-                st.info("Player already existed in the database")
+            # else:
+            #     st.info("Player already existed in the database")
+
 
 
 
@@ -176,15 +194,30 @@ if st.session_state.get("search_clicked",False):
             st.subheader("📊 Career Overview")
             #importing the players/batting endpoint to extract and print the batting stats :-
             
+
+
+
+
             url = f"https://cricbuzz-cricket.p.rapidapi.com/stats/v1/player/{selected_player_id}/batting"
+            
             headers = {
-	          "x-rapidapi-key": "a14617a5fdmsh78a4372d53e9856p147d97jsn9e967e13adb5",
+	          "x-rapidapi-key": "b0102cb292msh23226301ff12009p19a043jsn677d85b2be33",
 	          "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
 	          "Content-Type": "application/json"
             }
             batting_response = requests.get(url, headers=headers)
-            batting_data = (batting_response.json())
+
+            # st.write("STATUS:", batting_response.status_code)
+            # st.write("RESPONSE:", batting_response.text)
+            
+            if batting_response.status_code == 204:
+                st.warning("No batting or bowling statistics available for this player.")
+                st.stop()
+
+            batting_data = batting_response.json()
             #st.json(batting_data)
+
+
             column_headers = batting_data['headers']
             batting_rows = []
             for item in batting_data['values']:
@@ -219,13 +252,17 @@ if st.session_state.get("search_clicked",False):
             url = f"https://cricbuzz-cricket.p.rapidapi.com/stats/v1/player/{selected_player_id}/bowling"
 
             headers = {
-	           "x-rapidapi-key": "a14617a5fdmsh78a4372d53e9856p147d97jsn9e967e13adb5",
+	           "x-rapidapi-key": "b0102cb292msh23226301ff12009p19a043jsn677d85b2be33",
 	           "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
 	           "Content-Type": "application/json"
             }
 
             bowling_response = requests.get(url, headers=headers)
-            bowling_data = (bowling_response.json())
+            if bowling_response.status_code == 204:
+                st.warning("No bowling statistics available for this player.")
+                st.stop()
+
+            bowling_data = bowling_response.json()
             #st.json(bowling_data)
             bowling_rows = []
             for bowling_item in bowling_data['values']:

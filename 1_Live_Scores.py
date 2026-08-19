@@ -108,9 +108,6 @@
 #print(match_data)
 #print(data)
 
-
-
-
 import pandas as pd
 import streamlit as st
 import requests
@@ -118,13 +115,30 @@ from db_connection import mydb,mycursor
 #import pandas as pd
 #import json
 
+# Sidebar information box
+st.sidebar.markdown("""
+<div style="background-color: #294C6F; padding: 15px; border-radius: 8px; color: white;">
+<b>Live Scores Page:</b>
+<ul>
+<li>Real-time match data</li>
+<li>Detailed scorecards</li>
+<li>Series information</li>
+<li>Interactive match selection</li>
+</ul>
+</div>
+""", unsafe_allow_html=True)
+
+
+#creating the title for the sidebar
+# st.sidebar.title("🖌️ Cricket Dashboard")
+
 #First Api extracted :-
-import requests
+
 
 url = "https://cricbuzz-cricket.p.rapidapi.com/matches/v1/live"
 
 headers = {
-	"x-rapidapi-key": "a14617a5fdmsh78a4372d53e9856p147d97jsn9e967e13adb5",
+	"x-rapidapi-key": "b0102cb292msh23226301ff12009p19a043jsn677d85b2be33",
 	"x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
 	"Content-Type": "application/json"
 }
@@ -173,6 +187,8 @@ for match_type in data['typeMatches']:
             series_name = match['matchInfo']['seriesName']
             match_description = match['matchInfo']['matchDesc']
             start_date = match['matchInfo']['startDate']
+            #print("DEBUG MATCH:", match_id)
+            #print("DEBUG START DATE:", start_date)
             end_date = match['matchInfo']['endDate']
             match_format = match['matchInfo']['matchFormat']
             match_state = match['matchInfo']['state']
@@ -184,11 +200,11 @@ for match_type in data['typeMatches']:
             latitude = match['matchInfo']['venueInfo']['latitude']
             longitude = match['matchInfo']['venueInfo']['longitude']
             team1_name = match['matchInfo']['team1']['teamName']
-            team2_name = match['matchInfo']['team2']['teamName']
+            team2_name = match[F'matchInfo']['team2']['teamName']
             team1_id = match['matchInfo']['team1']['teamId']
-            team2_id = match['matchInfo']['team1']['teamId']
-            team1_short = team1_id = match['matchInfo']['team1']['teamSName']
-            team2_short = team1_id = match['matchInfo']['team1']['teamSName']
+            team2_id = match['matchInfo']['team2']['teamId']
+            team1_short = match['matchInfo']['team1']['teamSName']
+            team2_short = match['matchInfo']['team2']['teamSName']
             team_VS = f"{team1_name} Vs {team2_name}"
             #check matchscore key :-
             match_score = match.get('matchScore', {})
@@ -206,6 +222,21 @@ for match_type in data['typeMatches']:
             team1_score = f"{team1_runs}/{team1_wickets} ({team1_overs})"
             team2_score = f"{team2_runs}/{team2_wickets} ({team2_overs})"
             #print(f"{team1_score},{team2_score}")
+            
+            # EXTRACTING VENUE/INFO API FOR QN.4 IN SQL:
+            url = f"https://cricbuzz-cricket.p.rapidapi.com/venues/v1/{venue_id}"
+
+            headers = {
+	                "x-rapidapi-key":"b0102cb292msh23226301ff12009p19a043jsn677d85b2be33",
+	                "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
+	                "Content-Type": "application/json"
+            }  
+
+            venue_additional_response = requests.get(url, headers=headers)
+
+            venue_data_new = (venue_additional_response.json())
+            country = venue_data_new['country']
+            capacity = venue_data_new.get('capacity')
 
             #solving mysql connection issue:
             #print(team1_id)
@@ -214,7 +245,9 @@ for match_type in data['typeMatches']:
             if not mydb.is_connected():
                 mydb.reconnect()
             
-            
+             # =======================================
+             # INSERTING VALUES IN THE TEAMS TABLE:
+             # =======================================
             mycursor.execute(
                 "SELECT * FROM TEAMS WHERE Team_id = %s",
                 (team1_id,)
@@ -246,9 +279,9 @@ for match_type in data['typeMatches']:
             )
             mydb.commit()
             
-            
-            
-            #  INSERT INTO MATCHES goes HERE
+            # =======================================
+            # INSERTING VALUES IN THE MACTHES TABLE:
+            # =======================================
             mycursor.execute(
                 "SELECT * FROM MATCHES WHERE match_id = %s",
                 (match_id,)
@@ -262,6 +295,8 @@ for match_type in data['typeMatches']:
                SET start_date = %s
                WHERE match_id = %s
             """, (start_date, match_id))
+
+               #print("UPDATED ROWS:", mycursor.rowcount)
 
                mydb.commit()
             
@@ -295,21 +330,27 @@ for match_type in data['typeMatches']:
                    "SELECT start_date FROM MATCHES WHERE match_id = %s",
                     (match_id,)
             ) 
-            
+            result = mycursor.fetchone()
+            # print("DB START DATE:", result)
 
-            #INSERTING VALUES IN THE VENUE TABLE:
+           
+
+            #=======================================
+            #INSERTING VALUES IN THE VENUES TABLE:
+            #=======================================
+            # st.write("DEBUG venue_id:", venue_id)
+            # st.write("DEBUG country:", country)
+            # st.write("DEBUG capacity:", capacity)
+
             mycursor.execute(
                 "SELECT * FROM VENUES WHERE venue_id = %s",
                 (venue_id,)
             )           
-                
-                
-            
             existing_venues = mycursor.fetchone()
             if existing_venues is None:
                 mycursor.execute("""
-                INSERT INTO VENUES (venue_id, ground, city, timezone, latitude, longitude)
-                VALUES (%s, %s, %s, %s, %s, %s)
+                INSERT INTO VENUES (venue_id, ground, city, timezone, latitude, longitude, country, capacity)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 """,
                  (
                     venue_id,
@@ -317,22 +358,38 @@ for match_type in data['typeMatches']:
                     match_city,
                     timezone,
                     latitude,
-                    longitude
+                    longitude,
+                    country,
+                    capacity
                 )
                 )
+            else:
 
-                mydb.commit()
-                
-                #INSERTING VALUES IN THE SERIES TABLE:
-                mycursor.execute(
+                # st.write("UPDATING VENUE:", venue_id)
+                mycursor.execute("""
+                    UPDATE VENUES 
+                    SET country = %s,
+                        capacity = %s
+                    WHERE venue_id = %s
+                """,
+                (
+                    country,
+                    capacity,
+                    venue_id
+                ))
+            mydb.commit()
+                # =======================================
+                # INSERTING VALUES IN THE SERIES TABLE:
+                # =======================================
+            mycursor.execute(
                 "SELECT * FROM SERIES WHERE series_id = %s",
                 (series_id,)
                 )           
                 
                 
             
-                existing_series = mycursor.fetchone()
-                if existing_series is None:
+            existing_series = mycursor.fetchone()
+            if existing_series is None:
                     mycursor.execute("""
                       INSERT INTO SERIES (series_id, series_name)
                       VALUES (%s, %s)
@@ -343,7 +400,7 @@ for match_type in data['typeMatches']:
                       )
                     ) 
 
-                mydb.commit()
+            mydb.commit()
 
                 
 
@@ -418,7 +475,7 @@ selected_id = match1['MatchId']
 url = f"https://cricbuzz-cricket.p.rapidapi.com/mcenter/v1/{selected_id}/scard"
 
 headers = {
-	"x-rapidapi-key": "a14617a5fdmsh78a4372d53e9856p147d97jsn9e967e13adb5",
+	"x-rapidapi-key": "b0102cb292msh23226301ff12009p19a043jsn677d85b2be33",
 	"x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
 	"Content-Type": "application/json"
 }
@@ -666,7 +723,16 @@ if st.button("📋 Click to View Detailed Scorecard"):
         st.info("Second Innings has not started yet")   
     
     
-
+st.divider()
+st.subheader("📱 About This Dashboard")
+st.write("This comprehensive Cricket Dashboard demonstrates:")
+st.markdown("""
+    - API Integration: Real-time data from Cricbuzz AP Database Operations.
+    - MySQL with full CRUD functionality Data 
+    - Analysis: 20 different SQL analytics queries.
+    - Interactive Ut: Streamlit components with caching Player Statistics.
+    - Detailed batting and bowling stats.
+    """)
 
 
 

@@ -2,10 +2,24 @@ import streamlit as st
 import pandas as pd
 from db_connection import mydb,mycursor 
 
-#Setting the title for the page:-
-st.title(" CRUD Operations")
 
-st.subheader("Create, Read, Update, Delete Player Records")
+# Sidebar information box
+st.sidebar.markdown("""
+<div style="background-color: #294C6F; padding: 15px; border-radius: 8px; color: white;">
+<b>CRUD Operations Page:</b>
+<ul>
+<li>Create new player records</li>
+<li>Read and search existing players</li>
+<li>Update player information</li>
+<li>Delete player records</li>
+</ul>
+</div>
+""", unsafe_allow_html=True)
+
+#Setting the title for the page:-
+st.title("🔧 CRUD Operations")
+
+st.subheader("📝 Create, Read, Update, Delete Player Records")
 
 #create the dropdown :-
 operation = st.selectbox(
@@ -276,7 +290,16 @@ if operation == "Delete":
         else:
             st.warning("❌ No player found with that name.")
 
-
+st.divider()
+st.subheader("📱 About This Dashboard")
+st.write("This comprehensive Cricket Dashboard demonstrates:")
+st.markdown("""
+    - API Integration: Real-time data from Cricbuzz AP Database Operations.
+    - MySQL with full CRUD functionality Data 
+    - Analysis: 20 different SQL analytics queries.
+    - Interactive Ut: Streamlit components with caching Player Statistics.
+    - Detailed batting and bowling stats.
+    """)
 
                             
                              
