@@ -1,46 +1,50 @@
 # 🏏 Cricbuzz LiveStats Dashboard
 
-A Streamlit-based cricket analytics dashboard built using **Python, MySQL, Pandas, and Streamlit**. The project is designed to display and analyze cricket player statistics using data stored in a MySQL database.
+A Streamlit-based cricket analytics dashboard built using **Python, MySQL, Pandas, and Streamlit**. The project provides an interactive platform to explore cricket data, view player statistics, perform SQL-based analytics, and manage player records through CRUD operations.
 
 ## 📌 Project Overview
 
-Cricbuzz LiveStats is a cricket statistics dashboard that provides an interactive interface for viewing player information and analyzing cricket performance data.
+**Cricbuzz LiveStats** is a multi-page cricket analytics dashboard that combines data stored in a MySQL database with an interactive Streamlit interface.
 
-The project combines:
+The application includes four main sections:
 
-* **Python** for application logic
-* **MySQL** for storing cricket/player data
-* **Pandas** for data processing
-* **Streamlit** for building the interactive dashboard
+* 🏏 **Live Scores** – View live cricket score information.
+* 📊 **Player Statistics** – Explore player performance and statistical information.
+* 🗄️ **SQL Analytics** – Perform predefined SQL-based cricket data analysis.
+* ⚙️ **CRUD Operations** – Create, read, update, and delete player records.
 
-The project also includes a CRUD section for managing player records.
+The project demonstrates the integration of a Python application with a relational database and provides an interactive interface for cricket data analysis.
 
 ## ✨ Features
 
-### 1. Cricket Statistics Dashboard
+### 1. 🏏 Live Scores
 
-The dashboard provides an interactive view of cricket statistics and player-related information.
+The Live Scores page provides an interactive view of cricket match and score information.
 
-Users can explore the available data through a Streamlit interface.
+Users can explore available match data through the Streamlit dashboard.
 
-### 2. Player Statistics / Analysis
+### 2. 📊 Player Statistics
 
-The application retrieves data from MySQL and processes it using Pandas before displaying it through the Streamlit dashboard.
+The Player Statistics page retrieves cricket player information from MySQL and processes the data using Pandas.
 
-The project focuses on making cricket statistics easier to view and understand through an interactive interface.
+Users can explore player-related statistics through an interactive interface.
 
-### 3. Player Records CRUD
+### 3. 🗄️ SQL Analytics
 
-A separate section was created to demonstrate CRUD operations:
+The SQL Analytics page provides predefined analytical queries for exploring cricket data stored in the MySQL database.
 
-* **Create** – Add player records
-* **Read** – View player records
+The page demonstrates the use of SQL queries to answer different cricket-related analytical questions.
+
+### 4. ⚙️ CRUD Operations
+
+The CRUD Operations page demonstrates database record management using Python, Streamlit, and MySQL.
+
+It supports:
+
+* **Create** – Add new player records
+* **Read** – View existing player records
 * **Update** – Modify player records
 * **Delete** – Remove player records
-
-The CRUD functionality currently works with a dedicated player records table in the database.
-
-> **Note:** The database design and integration of the CRUD section with the main player/statistics data are still being refined.
 
 ## 🛠️ Technologies Used
 
@@ -53,57 +57,83 @@ The CRUD functionality currently works with a dedicated player records table in 
 
 ## 🗄️ Database
 
-MySQL is used as the backend database for storing and retrieving cricket/player information.
+MySQL is used as the backend database for storing and retrieving cricket-related information.
 
 The Python application connects to MySQL using `mysql.connector`.
+
+The project includes database tables for cricket data such as:
+
+* Players
+* Player Records
+* Batting
+* Bowling
+* Matches
+* Scorecards
+* Series
+* Teams
+* Venues
 
 ## 📂 Project Structure
 
 ```text
-Cricbuzz-LiveStats/
+cricbuzz_livestats/
 │
-├── app.py
+├── 1_Live_Scores.py
 ├── requirements.txt
 ├── README.md
 │
-├── database/
-│   └── ...
-│
-└── assets/
-    └── ...
+└── pages/
+    ├── 2_Player_Statistics.py
+    ├── 3_SQL_Analytics.py
+    └── 4_CRUD_Operations.py
 ```
 
-*The actual file structure may vary depending on the current project implementation.*
+## 🚀 Application Pages
 
-## 🚧 Current Status
+| Page                 | Description                                  |
+| -------------------- | -------------------------------------------- |
+| 🏏 Live Scores       | Displays cricket score and match information |
+| 📊 Player Statistics | Explores cricket player statistics           |
+| 🗄️ SQL Analytics    | Performs SQL-based cricket data analysis     |
+| ⚙️ CRUD Operations   | Manages player records using CRUD operations |
 
-The project is **partially completed and under active development**.
+## ✅ Current Status
 
-The main dashboard pages and player CRUD functionality have been implemented.
+**Project Completed**
 
-The **third page of the application is currently under development** and will be completed after further refinement of the project requirements and database design.
+All four dashboard pages have been implemented and integrated into the Streamlit application:
 
-## 🎯 Future Improvements
+* ✅ Live Scores
+* ✅ Player Statistics
+* ✅ SQL Analytics
+* ✅ CRUD Operations
 
-* Complete the third dashboard page
-* Refine the database relationships
-* Improve integration between player records and the main statistics data
+The project is fully uploaded to GitHub and is ready to be used as a portfolio project.
+
+## 🔮 Future Improvements
+
+Possible future enhancements include:
+
 * Add more cricket analytics and visualizations
-* Improve UI/UX
-* Add additional filtering and player-selection functionality
+* Add additional filtering options
+* Improve dashboard UI/UX
+* Add more advanced player comparison features
 * Improve error handling and database connection management
+* Add additional analytical SQL queries
+* Deploy the Streamlit application online
 
-## 👨‍💻 Project Purpose
+## 🎯 Project Purpose
 
-This project was developed as a practical project to strengthen skills in:
+This project was developed as a practical data analytics and application development project to strengthen skills in:
 
-* Python
-* SQL/MySQL
+* Python programming
+* SQL and MySQL
 * Data processing with Pandas
 * Streamlit application development
+* Database connectivity
 * CRUD operations
-* Connecting a Python application with a relational database
+* Data analysis and visualization
 
 ## 📌 Disclaimer
 
-This project is a learning/portfolio project and is currently under development. Some features, particularly the third dashboard page and parts of the database integration, are still being refined.
+This project is a learning and portfolio project developed for demonstrating skills in Python, SQL, data analytics, database management, and Streamlit application development.
