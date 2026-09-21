@@ -2,6 +2,13 @@ import streamlit as st
 import pandas as pd
 import requests
 from db_connection import mydb,mycursor
+import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 
 # Sidebar information box
 st.sidebar.markdown("""
@@ -36,7 +43,7 @@ if st.session_state.get("search_clicked",False):
     querystring = {"plrN":player_name}
 
     headers = {
-	"x-rapidapi-key": "b0102cb292msh23226301ff12009p19a043jsn677d85b2be33",
+	"x-rapidapi-key": RAPIDAPI_KEY,
 	"x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
 	"Content-Type": "application/json"
     }
@@ -201,7 +208,7 @@ if st.session_state.get("search_clicked",False):
             url = f"https://cricbuzz-cricket.p.rapidapi.com/stats/v1/player/{selected_player_id}/batting"
             
             headers = {
-	          "x-rapidapi-key": "b0102cb292msh23226301ff12009p19a043jsn677d85b2be33",
+	          "x-rapidapi-key": RAPIDAPI_KEY,
 	          "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
 	          "Content-Type": "application/json"
             }
@@ -252,7 +259,7 @@ if st.session_state.get("search_clicked",False):
             url = f"https://cricbuzz-cricket.p.rapidapi.com/stats/v1/player/{selected_player_id}/bowling"
 
             headers = {
-	           "x-rapidapi-key": "b0102cb292msh23226301ff12009p19a043jsn677d85b2be33",
+	           "x-rapidapi-key": RAPIDAPI_KEY,
 	           "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
 	           "Content-Type": "application/json"
             }

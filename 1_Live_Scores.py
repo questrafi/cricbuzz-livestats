@@ -112,6 +112,13 @@ import pandas as pd
 import streamlit as st
 import requests
 from db_connection import mydb,mycursor
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
+
 #import pandas as pd
 #import json
 
@@ -138,7 +145,7 @@ st.sidebar.markdown("""
 url = "https://cricbuzz-cricket.p.rapidapi.com/matches/v1/live"
 
 headers = {
-	"x-rapidapi-key": "b0102cb292msh23226301ff12009p19a043jsn677d85b2be33",
+	"x-rapidapi-key": RAPIDAPI_KEY,
 	"x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
 	"Content-Type": "application/json"
 }
@@ -227,7 +234,7 @@ for match_type in data['typeMatches']:
             url = f"https://cricbuzz-cricket.p.rapidapi.com/venues/v1/{venue_id}"
 
             headers = {
-	                "x-rapidapi-key":"b0102cb292msh23226301ff12009p19a043jsn677d85b2be33",
+	                "x-rapidapi-key": RAPIDAPI_KEY,
 	                "x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
 	                "Content-Type": "application/json"
             }  
@@ -475,7 +482,7 @@ selected_id = match1['MatchId']
 url = f"https://cricbuzz-cricket.p.rapidapi.com/mcenter/v1/{selected_id}/scard"
 
 headers = {
-	"x-rapidapi-key": "b0102cb292msh23226301ff12009p19a043jsn677d85b2be33",
+	"x-rapidapi-key": RAPIDAPI_KEY,
 	"x-rapidapi-host": "cricbuzz-cricket.p.rapidapi.com",
 	"Content-Type": "application/json"
 }
