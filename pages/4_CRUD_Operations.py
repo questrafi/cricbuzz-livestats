@@ -265,30 +265,39 @@ if operation == "Delete":
                 f"⚠️ You are about to delete '{selected_player[1]}'. This action cannot be undone!"
             )
 
-            confirm = st.text_input(
-                f"Type DELETE {selected_player[1]} to confirm"
-            )
+            confirm = st.text_input("Type DELETE to confirm")
 
-            if confirm == f"DELETE {selected_player[1]}":
+            if confirm.strip().upper() == "DELETE":
 
                 if st.button("🗑️ Delete Player"):
 
-                    mydb.ping(reconnect=True, attempts=3, delay=2)
+                    try:
+                        mydb.ping(reconnect=True, attempts=3, delay=2)
 
-                    mycursor.execute("""
+                        mycursor.execute("""
                         DELETE FROM player_records
                         WHERE player_id = %s
-                    """, (selected_player[0],))
+                        """, (selected_player[0],))
 
-                    mydb.commit()
+                        mydb.commit()
 
-                    st.success("✅ Player deleted successfully!")
+                        if mycursor.rowcount > 0:
+                            st.success("✅ Player deleted successfully!")
+                            st.rerun()
+                        else:
+                            st.error("❌ No record was deleted.")
+
+                    except Exception as e:
+                        mydb.rollback()
+                        st.error(f"❌ Delete failed: {e}")
 
             elif confirm != "":
-                st.error("❌ Confirmation text does not match.")
+                st.error("❌ Please type DELETE to confirm.")
+    
 
-        else:
-            st.warning("❌ No player found with that name.")
+        
+
+
 
 st.divider()
 st.subheader("📱 About This Dashboard")
