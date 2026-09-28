@@ -151,7 +151,7 @@ headers = {
 }
 #defining function to prevent rerunnig the whole script everytime :-
 
-response = requests.get(url, headers=headers)
+response = requests.get(url, headers=headers, timeout=10)
 # st.write(url)
 
 # print(response.json())
